@@ -1,0 +1,30 @@
+# Temporary files
+tmp/
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Build outputs
+*.out
+*.hex
+*.bin
+*.elf
+*.map
+Debug/
+Release/
+
+# IDE settings
+.vscode/
+.settings/
+*.launch
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
