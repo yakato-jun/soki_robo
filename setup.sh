@@ -42,8 +42,8 @@ echo ""
 # 1. システムパッケージ
 # =============================================================================
 info "システムパッケージを更新・インストール..."
-sudo apt-get update -qq
-sudo apt-get install -y -qq \
+sudo apt update -qq
+sudo apt install -y -qq \
     python3-pip \
     python3-venv \
     git \
@@ -99,8 +99,8 @@ install_ros2() {
 http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo "$UBUNTU_CODENAME") main" \
         | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
-    sudo apt-get update -qq
-    sudo apt-get install -y -qq \
+    sudo apt update -qq
+    sudo apt install -y -qq \
         ros-jazzy-desktop \
         ros-dev-tools \
         python3-colcon-common-extensions \
