@@ -5,6 +5,9 @@ tmp/
 CLAUDE.md
 .claude/
 
+# Project internal
+project_purpose.md
+
 # Build outputs
 *.out
 *.hex
@@ -18,6 +21,10 @@ Release/
 .vscode/
 .settings/
 *.launch
+.metadata/
+.ccsproject
+.cproject
+.project
 
 # OS files
 .DS_Store
