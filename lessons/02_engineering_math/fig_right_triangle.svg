@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="350" viewBox="0 0 500 350">
+  <defs>
+    <style>
+      text {
+        font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+        fill: #2C3E50;
+      }
+      .label-large {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .label-formula {
+        font-size: 13px;
+        font-weight: 400;
+      }
+      .label-side {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .label-angle {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="350" fill="#FAFAFA"/>
+
+  <!-- Triangle vertices: A(80,280) bottom-left, B(380,280) bottom-right, C(380,60) top-right -->
+
+  <!-- Triangle fill -->
+  <polygon points="80,280 380,280 380,60" fill="#E8F4FD" stroke="#2C3E50" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Right angle square at B(380,280) -->
+  <polyline points="355,280 355,255 380,255" fill="none" stroke="#2C3E50" stroke-width="1.8"/>
+
+  <!-- Angle arc at A(80,280) for theta -->
+  <path d="M 120,280 A 40,40 0 0,0 104.4,256.6" fill="none" stroke="#2C3E50" stroke-width="1.8"/>
+
+  <!-- Theta label -->
+  <text x="125" y="268" class="label-angle">&#x3B8;</text>
+
+  <!-- Side labels -->
+
+  <!-- Adjacent side (bottom, horizontal): 隣辺 -->
+  <text x="200" y="310" class="label-side" text-anchor="middle">隣辺 (Adjacent)</text>
+
+  <!-- Opposite side (right, vertical): 対辺 -->
+  <text x="400" y="178" class="label-side" text-anchor="start" transform="rotate(90,400,178)">対辺 (Opposite)</text>
+
+  <!-- Hypotenuse (slanted): 斜辺 -->
+  <!-- Midpoint of hypotenuse: (230, 170), angle of slope -->
+  <text x="195" y="155" class="label-side" text-anchor="middle" transform="rotate(-36.3,195,155)">斜辺 (Hypotenuse)</text>
+
+  <!-- Formula annotations -->
+
+  <!-- sin formula - top right area -->
+  <rect x="18" y="18" width="220" height="90" rx="6" fill="white" stroke="#D5E8F0" stroke-width="1.2"/>
+
+  <text x="30" y="42" class="label-large" fill="#E74C3C">sin &#x3B8;</text>
+  <text x="100" y="42" class="label-formula">= 対辺 / 斜辺</text>
+
+  <text x="30" y="68" class="label-large" fill="#2980B9">cos &#x3B8;</text>
+  <text x="100" y="68" class="label-formula">= 隣辺 / 斜辺</text>
+
+  <text x="30" y="94" class="label-large" fill="#27AE60">tan &#x3B8;</text>
+  <text x="100" y="94" class="label-formula">= 対辺 / 隣辺 = 傾き</text>
+
+  <!-- Color-coded side highlights -->
+
+  <!-- Opposite side (red, for sin) - vertical line C to B -->
+  <line x1="380" y1="60" x2="380" y2="280" stroke="#E74C3C" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Adjacent side (blue, for cos) - horizontal line A to B -->
+  <line x1="80" y1="280" x2="380" y2="280" stroke="#2980B9" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Hypotenuse (green accent) - slanted line A to C -->
+  <line x1="80" y1="280" x2="380" y2="60" stroke="#27AE60" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Vertex dots -->
+  <circle cx="80" cy="280" r="3.5" fill="#2C3E50"/>
+  <circle cx="380" cy="280" r="3.5" fill="#2C3E50"/>
+  <circle cx="380" cy="60" r="3.5" fill="#2C3E50"/>
+
+  <!-- Colored side labels next to the sides -->
+  <text x="395" y="172" class="label-side" fill="#E74C3C" font-size="12px">sin</text>
+  <text x="225" y="298" class="label-side" fill="#2980B9" font-size="12px">cos</text>
+  <text x="205" y="178" class="label-side" fill="#27AE60" font-size="12px">tan</text>
+</svg>

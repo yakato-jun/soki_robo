@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#FAFAFA" rx="8"/>
+
+  <defs>
+    <!-- Arrowhead marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#666">
+      <polygon points="0 0, 10 3.5, 0 7"/>
+    </marker>
+
+    <!-- Drop shadow filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!-- Box 1: ロボットを触る（体験） - Top center, soft blue        -->
+  <!-- ============================================================ -->
+  <g filter="url(#shadow)">
+    <rect x="275" y="30" width="250" height="70" rx="14" fill="#4A90D9"/>
+    <text x="400" y="58" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="13">大枠1</text>
+    <text x="400" y="80" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="18">ロボットを触る（体験）</text>
+  </g>
+  <!-- Subtitle under Box 1 -->
+  <text x="400" y="118" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="13">車輪を回す、センサを読む</text>
+
+  <!-- ============================================================ -->
+  <!-- Box 2: 工学的数学（道具） - Bottom left, soft green          -->
+  <!-- ============================================================ -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="290" width="250" height="70" rx="14" fill="#5CB85C"/>
+    <text x="185" y="318" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="13">大枠2</text>
+    <text x="185" y="340" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="18">工学的数学（道具）</text>
+  </g>
+  <!-- Subtitle under Box 2 -->
+  <text x="185" y="378" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="13">三角関数、線形代数、微積、確率</text>
+
+  <!-- ============================================================ -->
+  <!-- Box 3: 工学演算（応用） - Bottom right, soft orange          -->
+  <!-- ============================================================ -->
+  <g filter="url(#shadow)">
+    <rect x="490" y="290" width="250" height="70" rx="14" fill="#F0AD4E"/>
+    <text x="615" y="318" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="13">大枠3</text>
+    <text x="615" y="340" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="18">工学演算（応用）</text>
+  </g>
+  <!-- Subtitle under Box 3 -->
+  <text x="615" y="378" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="13">運動学、PID、カルマンフィルタ</text>
+
+  <!-- ============================================================ -->
+  <!-- Curved Arrow: Box1 → Box2  (top-center to bottom-left)      -->
+  <!-- Label: なぜ必要？                                            -->
+  <!-- ============================================================ -->
+  <path d="M 300 100 C 220 140, 120 200, 120 285"
+        fill="none" stroke="#666" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+  <text x="165" y="185" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="15" font-weight="bold">
+    なぜ必要？
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- Curved Arrow: Box2 → Box3  (bottom-left to bottom-right)    -->
+  <!-- Label: どう使う？                                            -->
+  <!-- ============================================================ -->
+  <path d="M 315 340 C 370 400, 440 410, 485 340"
+        fill="none" stroke="#666" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+  <text x="400" y="430" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="15" font-weight="bold">
+    どう使う？
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- Curved Arrow: Box3 → Box1  (bottom-right to top-center)     -->
+  <!-- Label: もっと知りたい！                                      -->
+  <!-- ============================================================ -->
+  <path d="M 680 285 C 680 200, 580 140, 500 100"
+        fill="none" stroke="#666" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+  <text x="640" y="185" text-anchor="middle" fill="#333" font-family="sans-serif" font-size="15" font-weight="bold">
+    もっと知りたい！
+  </text>
+
+  <!-- ============================================================ -->
+  <!-- Center content: circular arrow icon + cycle text             -->
+  <!-- ============================================================ -->
+  <g transform="translate(400, 235)">
+    <!-- Circular arrow (simplified with arcs) -->
+    <path d="M -18 -12 A 18 18 0 1 1 -5 16" fill="none" stroke="#888" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+    <!-- Cycle text -->
+    <text x="0" y="42" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="14" font-weight="bold">
+      体験 → 道具 → 応用
+    </text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Footer / title area                                          -->
+  <!-- ============================================================ -->
+  <text x="400" y="480" text-anchor="middle" fill="#999" font-family="sans-serif" font-size="12">
+    ロボティクス学習サイクル
+  </text>
+</svg>

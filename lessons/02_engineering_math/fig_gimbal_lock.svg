@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="280" viewBox="0 0 600 280">
+  <defs>
+    <style>
+      text {
+        font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 11px;
+        fill: #333333;
+      }
+      .caption {
+        font-size: 12px;
+        font-weight: bold;
+        text-anchor: middle;
+        fill: #222222;
+      }
+      .axis-label {
+        font-size: 11px;
+        font-weight: bold;
+      }
+      .ring-y { stroke: #2244AA; fill: none; stroke-width: 3; }
+      .ring-x { stroke: #228833; fill: none; stroke-width: 3; }
+      .ring-z { stroke: #CC2222; fill: none; stroke-width: 3; }
+    </style>
+    <marker id="arrowY" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0,0 L 6,3 L 0,6 Z" fill="#2244AA" />
+    </marker>
+    <marker id="arrowX" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0,0 L 6,3 L 0,6 Z" fill="#228833" />
+    </marker>
+    <marker id="arrowZ" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M 0,0 L 6,3 L 0,6 Z" fill="#CC2222" />
+    </marker>
+  </defs>
+
+  <!-- ========================================= -->
+  <!-- LEFT SIDE: Normal state (3 DOF)           -->
+  <!-- Center: 150, 125                          -->
+  <!-- ========================================= -->
+
+  <!-- Y axis ring (Blue, outer) - tilted vertical ellipse -->
+  <ellipse cx="150" cy="125" rx="42" ry="90"
+           class="ring-y"
+           transform="rotate(-20, 150, 125)" />
+
+  <!-- X axis ring (Green, middle) - tilted horizontal ellipse -->
+  <ellipse cx="150" cy="125" rx="75" ry="30"
+           class="ring-x"
+           transform="rotate(8, 150, 125)" />
+
+  <!-- Z axis ring (Red, inner) - tilted at a distinct angle -->
+  <ellipse cx="150" cy="125" rx="55" ry="28"
+           class="ring-z"
+           transform="rotate(-55, 150, 125)" />
+
+  <!-- Small center dot to indicate origin -->
+  <circle cx="150" cy="125" r="3" fill="#555555" />
+
+  <!-- Axis labels for left diagram -->
+  <text x="130" y="22" class="axis-label" fill="#2244AA">Y&#36600;</text>
+  <text x="230" y="120" class="axis-label" fill="#228833">X&#36600;</text>
+  <text x="72" y="195" class="axis-label" fill="#CC2222">Z&#36600;</text>
+
+  <!-- Small curved arrows indicating rotation direction -->
+  <path d="M 127,30 C 120,35 118,42 122,48"
+        stroke="#2244AA" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowY)" />
+  <path d="M 222,132 C 226,138 226,144 220,148"
+        stroke="#228833" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowX)" />
+  <path d="M 82,186 C 78,180 78,174 84,170"
+        stroke="#CC2222" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowZ)" />
+
+  <!-- Caption: Normal state -->
+  <text x="150" y="252" class="caption">&#36890;&#24120;&#29366;&#24907;&#65288;3&#33258;&#30001;&#24230;&#65289;</text>
+
+  <!-- ========================================= -->
+  <!-- DIVIDER: Vertical dashed line             -->
+  <!-- ========================================= -->
+  <line x1="300" y1="10" x2="300" y2="265"
+        stroke="#999999" stroke-width="1" stroke-dasharray="6,4" />
+
+  <!-- ========================================= -->
+  <!-- RIGHT SIDE: Gimbal lock state (2 DOF)     -->
+  <!-- Center: 450, 125                          -->
+  <!-- ========================================= -->
+
+  <!-- Y axis ring (Blue, outer) - aligned with Z (same vertical plane) -->
+  <ellipse cx="450" cy="125" rx="38" ry="90"
+           class="ring-y" />
+
+  <!-- X axis ring (Green, middle) - still an independent ellipse -->
+  <ellipse cx="450" cy="125" rx="75" ry="30"
+           class="ring-x"
+           transform="rotate(8, 450, 125)" />
+
+  <!-- Z axis ring (Red, inner) - aligned with Y (same plane) -->
+  <ellipse cx="450" cy="125" rx="28" ry="68"
+           class="ring-z" />
+
+  <!-- Small center dot -->
+  <circle cx="450" cy="125" r="3" fill="#555555" />
+
+  <!-- Axis labels for right diagram -->
+  <text x="415" y="22" class="axis-label" fill="#2244AA">Y&#36600;</text>
+  <text x="460" y="22" class="axis-label" fill="#CC2222">Z&#36600;</text>
+
+  <!-- Bracket to show Y and Z have merged into same plane -->
+  <line x1="424" y1="26" x2="470" y2="26"
+        stroke="#666666" stroke-width="1" />
+  <text x="447" y="14" style="font-size:9px; text-anchor:middle;" fill="#666666">&#21516;&#19968;&#24179;&#38754;</text>
+
+  <!-- X axis label -->
+  <text x="530" y="120" class="axis-label" fill="#228833">X&#36600;</text>
+
+  <!-- Arrows indicating the aligned axes -->
+  <path d="M 430,30 C 424,36 422,43 426,49"
+        stroke="#2244AA" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowY)" />
+  <path d="M 472,52 C 478,46 480,39 476,33"
+        stroke="#CC2222" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowZ)" />
+  <path d="M 522,132 C 526,138 526,144 520,148"
+        stroke="#228833" fill="none" stroke-width="1.5"
+        marker-end="url(#arrowX)" />
+
+  <!-- Caption: Gimbal lock state -->
+  <text x="450" y="252" class="caption">&#12472;&#12531;&#12496;&#12523;&#12525;&#12483;&#12463;&#29366;&#24907;&#65288;2&#33258;&#30001;&#24230;&#65289;</text>
+
+  <!-- ========================================= -->
+  <!-- Legend at the very bottom                 -->
+  <!-- ========================================= -->
+  <line x1="130" y1="272" x2="150" y2="272" stroke="#2244AA" stroke-width="2.5" />
+  <text x="154" y="275" style="font-size:9px;" fill="#333">Y&#36600;&#65288;&#22806;&#20596;&#12522;&#12531;&#12464;&#65289;</text>
+
+  <line x1="250" y1="272" x2="270" y2="272" stroke="#228833" stroke-width="2.5" />
+  <text x="274" y="275" style="font-size:9px;" fill="#333">X&#36600;&#65288;&#20013;&#38291;&#12522;&#12531;&#12464;&#65289;</text>
+
+  <line x1="380" y1="272" x2="400" y2="272" stroke="#CC2222" stroke-width="2.5" />
+  <text x="404" y="275" style="font-size:9px;" fill="#333">Z&#36600;&#65288;&#20869;&#20596;&#12522;&#12531;&#12464;&#65289;</text>
+
+</svg>

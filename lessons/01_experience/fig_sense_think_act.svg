@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <!-- Arrow marker for forward arrows -->
+    <marker id="arrowForward" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <!-- Arrow marker for the feedback loop -->
+    <marker id="arrowBack" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="400" rx="8" fill="#FAFAFA"/>
+
+  <!-- ======================================================= -->
+  <!-- Title -->
+  <!-- ======================================================= -->
+  <text x="400" y="36" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="bold" fill="#333">
+    Sense &#8211; Think &#8211; Act サイクル
+  </text>
+
+  <!-- ======================================================= -->
+  <!-- Circles  (cx: 150, 400, 650   cy: 130   r: 60) -->
+  <!-- ======================================================= -->
+
+  <!-- 認知 (Sense) -->
+  <circle cx="150" cy="130" r="60" fill="#5BC0DE" opacity="0.15" stroke="#5BC0DE" stroke-width="2.5"/>
+  <text x="150" y="108" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#5BC0DE">&#x1F441;</text>
+  <text x="150" y="142" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="bold" fill="#3A8FA7">認知</text>
+  <text x="150" y="162" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#5BC0DE">Sense</text>
+
+  <!-- 判断 (Think) -->
+  <circle cx="400" cy="130" r="60" fill="#9B59B6" opacity="0.15" stroke="#9B59B6" stroke-width="2.5"/>
+  <text x="400" y="108" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#9B59B6">&#x1F9E0;</text>
+  <text x="400" y="142" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="bold" fill="#7D3C98">判断</text>
+  <text x="400" y="162" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#9B59B6">Think</text>
+
+  <!-- 制御 (Act) -->
+  <circle cx="650" cy="130" r="60" fill="#E74C3C" opacity="0.15" stroke="#E74C3C" stroke-width="2.5"/>
+  <text x="650" y="108" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="#E74C3C">&#x26A1;</text>
+  <text x="650" y="142" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="bold" fill="#C0392B">制御</text>
+  <text x="650" y="162" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#E74C3C">Act</text>
+
+  <!-- ======================================================= -->
+  <!-- Forward arrows: 認知 → 判断  and  判断 → 制御 -->
+  <!-- ======================================================= -->
+
+  <!-- 認知 → 判断 -->
+  <line x1="215" y1="118" x2="335" y2="118"
+        stroke="#666" stroke-width="2" marker-end="url(#arrowForward)"/>
+  <text x="275" y="110" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#555">情報</text>
+
+  <!-- 判断 → 制御 -->
+  <line x1="465" y1="118" x2="585" y2="118"
+        stroke="#666" stroke-width="2" marker-end="url(#arrowForward)"/>
+  <text x="525" y="110" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#555">命令</text>
+
+  <!-- ======================================================= -->
+  <!-- Feedback arrow: 制御 → 認知  (curved below) -->
+  <!-- ======================================================= -->
+  <path d="M 650 195 C 650 270, 150 270, 150 195"
+        fill="none" stroke="#888" stroke-width="2" stroke-dasharray="6 3"
+        marker-end="url(#arrowBack)"/>
+  <text x="400" y="268" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#777">環境が変わる</text>
+
+  <!-- ======================================================= -->
+  <!-- Example labels below each circle -->
+  <!-- ======================================================= -->
+
+  <!-- Under 認知 -->
+  <text x="150" y="218" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#555">エンコーダ / IMU / LiDAR</text>
+
+  <!-- Under 判断 -->
+  <text x="400" y="218" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#555">経路計画 / 目標追従</text>
+
+  <!-- Under 制御 -->
+  <text x="650" y="218" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#555">車輪を回す / 速度を変える</text>
+
+  <!-- ======================================================= -->
+  <!-- Sensor-type brackets -->
+  <!-- ======================================================= -->
+
+  <!-- 内界センサ bracket (under エンコーダ / IMU) -->
+  <!-- Spans roughly from x=90 to x=178 -->
+  <path d="M 90 230 L 90 238 L 178 238 L 178 230"
+        fill="none" stroke="#5BC0DE" stroke-width="1.5"/>
+  <text x="134" y="252" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="bold" fill="#5BC0DE">内界センサ</text>
+
+  <!-- 外界センサ bracket (under LiDAR) -->
+  <!-- Spans roughly from x=188 to x=210 -->
+  <path d="M 188 230 L 188 238 L 216 238 L 216 230"
+        fill="none" stroke="#E67E22" stroke-width="1.5"/>
+  <text x="202" y="252" text-anchor="middle"
+        font-family="'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="bold" fill="#E67E22">外界センサ</text>
+
+  <!-- ======================================================= -->
+  <!-- Subtle decorative border -->
+  <!-- ======================================================= -->
+  <rect x="1" y="1" width="798" height="398" rx="8"
+        fill="none" stroke="#DDD" stroke-width="1"/>
+</svg>
