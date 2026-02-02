@@ -1,0 +1,20 @@
+[Unit]
+Description=Jupyter Notebook for soki_robo
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@@PROJECT_ROOT@@
+Environment="PATH=@@PROJECT_ROOT@@/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=@@PROJECT_ROOT@@/.venv/bin/jupyter-notebook \
+    --ip=0.0.0.0 --port=8888 --no-browser \
+    --notebook-dir=@@PROJECT_ROOT@@ \
+    --ServerApp.token='' --ServerApp.password='' \
+    --NotebookApp.token='' --NotebookApp.password=''
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=default.target

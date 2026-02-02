@@ -1,0 +1,17 @@
+[Unit]
+Description=TigerVNC Server for soki_robo (display :1)
+After=network-online.target
+
+[Service]
+Type=forking
+ExecStartPre=/bin/sh -c 'mkdir -p ~/.vnc && cp -n @@PROJECT_ROOT@@/utils/service_manager/soki-vnc-xstartup ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup'
+ExecStart=/usr/bin/vncserver :1 -geometry 1280x720 -depth 24 -SecurityTypes None -localhost yes --I-KNOW-THIS-IS-INSECURE
+ExecStop=/usr/bin/vncserver -kill :1
+PIDFile=/home/%u/.vnc/%H:1.pid
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=default.target
