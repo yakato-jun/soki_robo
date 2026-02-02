@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="380" viewBox="0 0 500 380">
+  <defs>
+    <style>
+      text {
+        font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+        fill: #2C3E50;
+      }
+      .title {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .axis-label {
+        font-size: 10px;
+        font-weight: 500;
+      }
+      .tick-label {
+        font-size: 9px;
+        font-weight: 400;
+      }
+      .delta-label {
+        font-size: 9px;
+        font-weight: 600;
+      }
+      .op-label {
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Consolas', 'Monaco', 'Noto Sans JP', monospace;
+      }
+    </style>
+    <marker id="arrowDown" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
+      <path d="M 1,0 L 4,8 L 7,0" fill="none" stroke="#E74C3C" stroke-width="1.5"/>
+    </marker>
+    <marker id="arrowDelta" markerWidth="6" markerHeight="6" refX="3" refY="0" orient="auto">
+      <path d="M 0,6 L 3,0 L 6,6" fill="none" stroke="#CC4444" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="380" fill="#FAFAFA"/>
+
+  <!-- ============================================ -->
+  <!-- TOP CHART: Position Data (位置データ)        -->
+  <!-- ============================================ -->
+  <!-- Chart area: x=70..460, y=30..140 -->
+  <!-- Data: t=[0.0,0.1,0.2,0.3,0.4,0.5], pos=[0.00,0.05,0.11,0.16,0.22,0.27] -->
+  <!-- X mapping: 0.0->90, 0.5->440 => scale = (440-90)/0.5 = 700 -->
+  <!-- Y mapping: 0.00->135, 0.27->40 => range=95, scale = 95/0.30 = ~316.7 -->
+
+  <!-- Chart title -->
+  <text x="265" y="22" class="title" text-anchor="middle">位置データ (Position)</text>
+
+  <!-- Grid lines (horizontal) -->
+  <line x1="88" y1="135" x2="450" y2="135" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="103" x2="450" y2="103" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="71" x2="450" y2="71" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="40" x2="450" y2="40" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+  <!-- Grid lines (vertical) -->
+  <line x1="90" y1="35" x2="90" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="160" y1="35" x2="160" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="230" y1="35" x2="230" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="300" y1="35" x2="300" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="370" y1="35" x2="370" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="440" y1="35" x2="440" y2="140" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+  <!-- Y axis -->
+  <line x1="88" y1="35" x2="88" y2="140" stroke="#4A4A4A" stroke-width="1.2"/>
+  <!-- X axis -->
+  <line x1="88" y1="140" x2="450" y2="140" stroke="#4A4A4A" stroke-width="1.2"/>
+
+  <!-- Y axis label -->
+  <text x="16" y="92" class="axis-label" text-anchor="middle" transform="rotate(-90,16,92)">位置 [m]</text>
+
+  <!-- X axis label -->
+  <text x="270" y="156" class="axis-label" text-anchor="middle">時間 [s]</text>
+
+  <!-- Y tick labels -->
+  <text x="82" y="139" class="tick-label" text-anchor="end">0.00</text>
+  <text x="82" y="107" class="tick-label" text-anchor="end">0.10</text>
+  <text x="82" y="75" class="tick-label" text-anchor="end">0.20</text>
+  <text x="82" y="43" class="tick-label" text-anchor="end">0.30</text>
+
+  <!-- X tick labels -->
+  <text x="90" y="152" class="tick-label" text-anchor="middle">0.0</text>
+  <text x="160" y="152" class="tick-label" text-anchor="middle">0.1</text>
+  <text x="230" y="152" class="tick-label" text-anchor="middle">0.2</text>
+  <text x="300" y="152" class="tick-label" text-anchor="middle">0.3</text>
+  <text x="370" y="152" class="tick-label" text-anchor="middle">0.4</text>
+  <text x="440" y="152" class="tick-label" text-anchor="middle">0.5</text>
+
+  <!-- Position data points and line -->
+  <!-- t=0.0 pos=0.00 => (90, 135) -->
+  <!-- t=0.1 pos=0.05 => (160, 119.2) -->
+  <!-- t=0.2 pos=0.11 => (230, 100.2) -->
+  <!-- t=0.3 pos=0.16 => (300, 84.3) -->
+  <!-- t=0.4 pos=0.22 => (370, 65.3) -->
+  <!-- t=0.5 pos=0.27 => (440, 49.5) -->
+
+  <!-- Connecting lines -->
+  <polyline points="90,135 160,119.2 230,100.2 300,84.3 370,65.3 440,49.5"
+            fill="none" stroke="#2244AA" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Delta-x annotations between adjacent points -->
+  <!-- Between t=0.0 and t=0.1: dx=0.05, from y=135 to y=119.2 at x=125 -->
+  <line x1="125" y1="135" x2="125" y2="119.2" stroke="#CC4444" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="122" y1="135" x2="128" y2="135" stroke="#CC4444" stroke-width="0.8"/>
+  <line x1="122" y1="119.2" x2="128" y2="119.2" stroke="#CC4444" stroke-width="0.8"/>
+  <text x="118" y="129" class="delta-label" fill="#CC4444" text-anchor="end" font-size="8px">&#x394;x</text>
+
+  <!-- Between t=0.1 and t=0.2: dx=0.06, from y=119.2 to y=100.2 at x=195 -->
+  <line x1="195" y1="119.2" x2="195" y2="100.2" stroke="#CC4444" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="192" y1="119.2" x2="198" y2="119.2" stroke="#CC4444" stroke-width="0.8"/>
+  <line x1="192" y1="100.2" x2="198" y2="100.2" stroke="#CC4444" stroke-width="0.8"/>
+  <text x="189" y="112" class="delta-label" fill="#CC4444" text-anchor="end" font-size="8px">&#x394;x</text>
+
+  <!-- Between t=0.2 and t=0.3: dx=0.05, from y=100.2 to y=84.3 at x=265 -->
+  <line x1="265" y1="100.2" x2="265" y2="84.3" stroke="#CC4444" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="262" y1="100.2" x2="268" y2="100.2" stroke="#CC4444" stroke-width="0.8"/>
+  <line x1="262" y1="84.3" x2="268" y2="84.3" stroke="#CC4444" stroke-width="0.8"/>
+  <text x="259" y="94" class="delta-label" fill="#CC4444" text-anchor="end" font-size="8px">&#x394;x</text>
+
+  <!-- Between t=0.3 and t=0.4: dx=0.06, from y=84.3 to y=65.3 at x=335 -->
+  <line x1="335" y1="84.3" x2="335" y2="65.3" stroke="#CC4444" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="332" y1="84.3" x2="338" y2="84.3" stroke="#CC4444" stroke-width="0.8"/>
+  <line x1="332" y1="65.3" x2="338" y2="65.3" stroke="#CC4444" stroke-width="0.8"/>
+  <text x="329" y="77" class="delta-label" fill="#CC4444" text-anchor="end" font-size="8px">&#x394;x</text>
+
+  <!-- Between t=0.4 and t=0.5: dx=0.05, from y=65.3 to y=49.5 at x=405 -->
+  <line x1="405" y1="65.3" x2="405" y2="49.5" stroke="#CC4444" stroke-width="1" stroke-dasharray="2,2"/>
+  <line x1="402" y1="65.3" x2="408" y2="65.3" stroke="#CC4444" stroke-width="0.8"/>
+  <line x1="402" y1="49.5" x2="408" y2="49.5" stroke="#CC4444" stroke-width="0.8"/>
+  <text x="399" y="60" class="delta-label" fill="#CC4444" text-anchor="end" font-size="8px">&#x394;x</text>
+
+  <!-- Data dots (on top of lines) -->
+  <circle cx="90" cy="135" r="4" fill="#2244AA"/>
+  <circle cx="160" cy="119.2" r="4" fill="#2244AA"/>
+  <circle cx="230" cy="100.2" r="4" fill="#2244AA"/>
+  <circle cx="300" cy="84.3" r="4" fill="#2244AA"/>
+  <circle cx="370" cy="65.3" r="4" fill="#2244AA"/>
+  <circle cx="440" cy="49.5" r="4" fill="#2244AA"/>
+
+  <!-- ============================================ -->
+  <!-- OPERATION ARROW BETWEEN CHARTS               -->
+  <!-- ============================================ -->
+  <line x1="265" y1="164" x2="265" y2="200" stroke="#E74C3C" stroke-width="2" marker-end="url(#arrowDown)"/>
+  <rect x="150" y="170" width="230" height="20" rx="4" fill="#FFF5F0" stroke="#E74C3C" stroke-width="0.8" opacity="0.9"/>
+  <text x="265" y="184" class="op-label" text-anchor="middle" fill="#E74C3C">np.diff(position) / dt</text>
+
+  <!-- ============================================ -->
+  <!-- BOTTOM CHART: Velocity (速度 = Δx / Δt)     -->
+  <!-- ============================================ -->
+  <!-- Chart area: x=70..460, y=220..330 -->
+  <!-- Data: t_mid=[0.05,0.15,0.25,0.35,0.45], vel=[0.5,0.6,0.5,0.6,0.5] -->
+  <!-- X mapping: same scale as top, midpoints at 125,195,265,335,405 -->
+  <!-- Y mapping: 0.0->325, 0.7->225 => range=100, scale=100/0.7=142.9 -->
+
+  <!-- Chart title -->
+  <text x="265" y="218" class="title" text-anchor="middle">速度 = &#x394;x / &#x394;t (Velocity)</text>
+
+  <!-- Grid lines (horizontal) -->
+  <line x1="88" y1="325" x2="450" y2="325" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="296" x2="450" y2="296" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="268" x2="450" y2="268" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="88" y1="239" x2="450" y2="239" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+  <!-- Grid lines (vertical, at midpoints) -->
+  <line x1="125" y1="228" x2="125" y2="330" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="195" y1="228" x2="195" y2="330" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="265" y1="228" x2="265" y2="330" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="335" y1="228" x2="335" y2="330" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+  <line x1="405" y1="228" x2="405" y2="330" stroke="#D0D0D0" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+  <!-- Y axis -->
+  <line x1="88" y1="228" x2="88" y2="330" stroke="#4A4A4A" stroke-width="1.2"/>
+  <!-- X axis -->
+  <line x1="88" y1="330" x2="450" y2="330" stroke="#4A4A4A" stroke-width="1.2"/>
+
+  <!-- Y axis label -->
+  <text x="14" y="280" class="axis-label" text-anchor="middle" transform="rotate(-90,14,280)">速度 [m/s]</text>
+
+  <!-- X axis label -->
+  <text x="270" y="348" class="axis-label" text-anchor="middle">時間 [s]</text>
+
+  <!-- Y tick labels -->
+  <text x="82" y="329" class="tick-label" text-anchor="end">0.0</text>
+  <text x="82" y="300" class="tick-label" text-anchor="end">0.2</text>
+  <text x="82" y="271" class="tick-label" text-anchor="end">0.4</text>
+  <text x="82" y="243" class="tick-label" text-anchor="end">0.6</text>
+
+  <!-- X tick labels (midpoints) -->
+  <text x="125" y="343" class="tick-label" text-anchor="middle">0.05</text>
+  <text x="195" y="343" class="tick-label" text-anchor="middle">0.15</text>
+  <text x="265" y="343" class="tick-label" text-anchor="middle">0.25</text>
+  <text x="335" y="343" class="tick-label" text-anchor="middle">0.35</text>
+  <text x="405" y="343" class="tick-label" text-anchor="middle">0.45</text>
+
+  <!-- Velocity bars -->
+  <!-- vel=0.5 => y = 325 - (0.5 * 142.9) = 325 - 71.4 = 253.6, height=71.4 -->
+  <!-- vel=0.6 => y = 325 - (0.6 * 142.9) = 325 - 85.7 = 239.3, height=85.7 -->
+
+  <!-- Bar at t=0.05: vel=0.5 -->
+  <rect x="107" y="253.6" width="36" height="71.4" rx="2" fill="#CC6600" opacity="0.25" stroke="#CC6600" stroke-width="0.5"/>
+  <!-- Bar at t=0.15: vel=0.6 -->
+  <rect x="177" y="239.3" width="36" height="85.7" rx="2" fill="#CC6600" opacity="0.25" stroke="#CC6600" stroke-width="0.5"/>
+  <!-- Bar at t=0.25: vel=0.5 -->
+  <rect x="247" y="253.6" width="36" height="71.4" rx="2" fill="#CC6600" opacity="0.25" stroke="#CC6600" stroke-width="0.5"/>
+  <!-- Bar at t=0.35: vel=0.6 -->
+  <rect x="317" y="239.3" width="36" height="85.7" rx="2" fill="#CC6600" opacity="0.25" stroke="#CC6600" stroke-width="0.5"/>
+  <!-- Bar at t=0.45: vel=0.5 -->
+  <rect x="387" y="253.6" width="36" height="71.4" rx="2" fill="#CC6600" opacity="0.25" stroke="#CC6600" stroke-width="0.5"/>
+
+  <!-- Step line connecting velocity points -->
+  <!-- Points: (125,253.6) (195,239.3) (265,253.6) (335,239.3) (405,253.6) -->
+  <!-- Step style: horizontal then vertical -->
+  <polyline points="125,253.6 160,253.6 160,239.3 195,239.3 230,239.3 230,253.6 265,253.6 300,253.6 300,239.3 335,239.3 370,239.3 370,253.6 405,253.6"
+            fill="none" stroke="#CC6600" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.6"/>
+
+  <!-- Connecting line (smooth) -->
+  <polyline points="125,253.6 195,239.3 265,253.6 335,239.3 405,253.6"
+            fill="none" stroke="#CC6600" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Velocity data dots -->
+  <circle cx="125" cy="253.6" r="4" fill="#CC6600"/>
+  <circle cx="195" cy="239.3" r="4" fill="#CC6600"/>
+  <circle cx="265" cy="253.6" r="4" fill="#CC6600"/>
+  <circle cx="335" cy="239.3" r="4" fill="#CC6600"/>
+  <circle cx="405" cy="253.6" r="4" fill="#CC6600"/>
+
+  <!-- Velocity value labels above dots -->
+  <text x="125" y="247" class="tick-label" text-anchor="middle" fill="#CC6600" font-weight="600">0.5</text>
+  <text x="195" y="233" class="tick-label" text-anchor="middle" fill="#CC6600" font-weight="600">0.6</text>
+  <text x="265" y="247" class="tick-label" text-anchor="middle" fill="#CC6600" font-weight="600">0.5</text>
+  <text x="335" y="233" class="tick-label" text-anchor="middle" fill="#CC6600" font-weight="600">0.6</text>
+  <text x="405" y="247" class="tick-label" text-anchor="middle" fill="#CC6600" font-weight="600">0.5</text>
+
+  <!-- ============================================ -->
+  <!-- KEY / LEGEND (bottom right)                  -->
+  <!-- ============================================ -->
+  <rect x="320" y="354" width="170" height="20" rx="4" fill="white" stroke="#D5E8F0" stroke-width="0.8"/>
+  <circle cx="336" cy="364" r="3" fill="#2244AA"/>
+  <text x="343" y="368" class="tick-label" fill="#2244AA">位置 (6点)</text>
+  <circle cx="418" cy="364" r="3" fill="#CC6600"/>
+  <text x="425" y="368" class="tick-label" fill="#CC6600">速度 (5点)</text>
+</svg>

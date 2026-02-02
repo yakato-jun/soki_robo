@@ -97,7 +97,7 @@ dt = 0.1
 velocity = np.array([0.0, 0.5, 0.5, 0.5, 0.5, 0.0])
 
 # 積分（台形）→ 総移動距離
-distance = np.trapz(velocity, dx=dt)
+distance = np.trapezoid(velocity, dx=dt)  # NumPy 2.0+
 print(f"総移動距離: {distance:.2f} m")  # 0.20 m
 
 # 累積積分 → 時刻ごとの位置
