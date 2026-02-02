@@ -1,24 +1,24 @@
-# souki_robo
+# soki_robo
 
 自律走行ロボットプロジェクト。
 
 ## ディレクトリ構成
 
 ```
-souki_robo/
+soki_robo/
 ├── lessons/          # レッスン（段階的に学習）
 ├── python/           # Python サンプル・ライブラリ
 │   ├── examples/     # サンプルスクリプト
 │   └── requirements.txt
 ├── ros2_ws/          # ROS2 ワークスペース
 │   └── src/
-│       ├── souki_bringup/      # 起動・設定
-│       ├── souki_description/  # URDF・モデル
-│       └── souki_navigation/   # ナビゲーション
+│       ├── soki_bringup/      # 起動・設定
+│       ├── soki_description/  # URDF・モデル
+│       └── soki_navigation/   # ナビゲーション
 ├── utils/            # ユーティリティ
 │   └── service_manager/  # RPi サービス自動起動管理
 └── firmware/         # MSPM0 ファームウェア
-    ├── souki_main/   # メインファームウェア（Modbus RTU スレーブ）
+    ├── soki_main/   # メインファームウェア（Modbus RTU スレーブ）
     ├── examples/     # 個別機能の実験用プロジェクト
     └── knowhow.md    # ファームウェア開発ノウハウ
 ```

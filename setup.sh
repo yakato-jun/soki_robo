@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# souki_robo セットアップスクリプト
+# soki_robo セットアップスクリプト
 #
 # Raspberry Pi (Ubuntu 24.04 Desktop) 用
 # リポジトリを clone した直後に実行してください。
@@ -33,7 +33,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo ""
 echo "============================================"
-echo "  souki_robo セットアップ"
+echo "  soki_robo セットアップ"
 echo "  対象: Ubuntu 24.04 (Raspberry Pi)"
 echo "============================================"
 echo ""

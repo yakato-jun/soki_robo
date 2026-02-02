@@ -1,5 +1,5 @@
 /*
- * souki_main — Modbus RTU Slave Firmware
+ * soki_main — Modbus RTU Slave Firmware
  *
  * MSPM0G3507 + Yahboom Expansion Board
  * RPi connects via UART0 (Modbus RTU, 115200 baud)
