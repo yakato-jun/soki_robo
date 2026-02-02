@@ -82,7 +82,7 @@ info "Python パッケージをインストール..."
 
 info "Python 環境 ... OK"
 echo "  インストール済みパッケージ:"
-"$VENV_DIR/bin/pip" list --format=columns 2>/dev/null | grep -iE "pymodbus|pyserial" | sed 's/^/    /'
+"$VENV_DIR/bin/pip" list --format=columns 2>/dev/null | grep -iE "pymodbus|pyserial|rplidar|numpy|matplotlib|jupyter" | sed 's/^/    /'
 
 # =============================================================================
 # 4. ROS2 Jazzy
@@ -135,8 +135,9 @@ echo ""
 info "シリアルポート確認..."
 if ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null; then
     echo "  上記のポートが見つかりました"
+    echo "  (通常: ttyUSB0=MCU(Modbus), ttyUSB1=LiDAR。接続順で変わります)"
 else
-    warn "シリアルポートが見つかりません。MCU が接続されているか確認してください。"
+    warn "シリアルポートが見つかりません。MCU / LiDAR が接続されているか確認してください。"
 fi
 
 # =============================================================================
@@ -222,6 +223,73 @@ print('  接続テスト OK')
         ;;
     *)
         info "接続テストをスキップ"
+        ;;
+esac
+
+# =============================================================================
+# 7. LiDAR 接続テスト (RPLIDAR A1M8)
+# =============================================================================
+echo ""
+read -rp "LiDAR (RPLIDAR A1M8) の接続テストを実行しますか？ [y/N]: " ans
+case "$ans" in
+    [yY]|[yY][eE][sS])
+        # MCU と別のポートを探す
+        LIDAR_PORT=""
+        for p in /dev/ttyUSB1 /dev/ttyUSB0 /dev/ttyUSB2; do
+            if [[ -e "$p" ]]; then
+                LIDAR_PORT="$p"
+                break
+            fi
+        done
+
+        if [[ -z "$LIDAR_PORT" ]]; then
+            warn "シリアルポートが見つかりません。テストをスキップします。"
+        else
+            read -rp "  LiDAR のポートは ${LIDAR_PORT} で合っていますか？ [Y/n]: " port_ans
+            case "$port_ans" in
+                [nN]|[nN][oO])
+                    read -rp "  ポートを入力してください (例: /dev/ttyUSB1): " LIDAR_PORT
+                    ;;
+            esac
+            info "LiDAR 接続テスト (${LIDAR_PORT})..."
+            "$VENV_DIR/bin/python" -c "
+from rplidar import RPLidar
+import sys
+
+lidar = RPLidar(port='${LIDAR_PORT}', baudrate=115200, timeout=1)
+try:
+    info = lidar.get_info()
+    print(f'  Model:     {info[\"model\"]}')
+    print(f'  Firmware:  {info[\"firmware\"]}')
+    print(f'  Hardware:  {info[\"hardware\"]}')
+
+    health = lidar.get_health()
+    print(f'  Health:    {health[0]} (code: {health[1]})')
+    if health[0] == 'Error':
+        print('  センサがエラー状態です。リセットが必要です。')
+        sys.exit(1)
+
+    # 1スキャンだけ取得して確認
+    for i, scan in enumerate(lidar.iter_scans(max_buf_meas=500)):
+        valid = [(q, a, d) for q, a, d in scan if d > 0]
+        print(f'  Scan:      {len(valid)} valid points')
+        if valid:
+            min_d = min(d for _, _, d in valid)
+            max_d = max(d for _, _, d in valid)
+            print(f'  Range:     {min_d:.0f} - {max_d:.0f} mm')
+        break
+
+    print()
+    print('  LiDAR 接続テスト OK')
+finally:
+    lidar.stop()
+    lidar.stop_motor()
+    lidar.disconnect()
+" && info "LiDAR 接続テスト ... OK" || warn "LiDAR 接続テストに失敗しました"
+        fi
+        ;;
+    *)
+        info "LiDAR テストをスキップ"
         ;;
 esac
 

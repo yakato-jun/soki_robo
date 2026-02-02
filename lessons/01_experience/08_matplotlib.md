@@ -121,12 +121,19 @@ plt.show()
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
+from rplidar import RPLidar
 
-# LiDARスキャンデータ（角度[deg], 距離[mm]のリスト）
-scan = robot.get_lidar_scan()
+# LiDARからスキャンデータを取得
+lidar = RPLidar(port='/dev/ttyUSB1', baudrate=115200, timeout=1)
+for scan in lidar.iter_scans():
+    valid = [(a, d) for _, a, d in scan if d > 0]
+    break
+lidar.stop()
+lidar.stop_motor()
+lidar.disconnect()
 
-angles_deg = np.array([a for a, d in scan])
-distances = np.array([d for a, d in scan])
+angles_deg = np.array([a for a, d in valid])
+distances = np.array([d for a, d in valid])
 
 # 極座標 → 直交座標
 angles_rad = np.radians(angles_deg)

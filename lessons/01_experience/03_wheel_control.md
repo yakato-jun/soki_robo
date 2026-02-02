@@ -9,16 +9,105 @@
 このロボット（Yahboom MSPM0）には、Pythonから **Modbus通信** で命令を送ります。
 
 Modbusとは:
-- ロボットへの命令の送り方の一つ（通信プロトコル）
-- 「このアドレスにこの値を書き込め」という形式
-- 細かい仕様は覚えなくてOK。**ライブラリが用意されている**
+- 産業用機器で広く使われている通信プロトコル
+- 「このアドレスにこの値を書き込め」「このアドレスの値を読め」という形式
+- Pythonでは `pymodbus` ライブラリを使う
+
+### 接続
 
 ```python
-# イメージ（実際のコードはロボットのライブラリに依存）
-robot.set_speed(left=100, right=100)  # 左右の車輪を同じ速度で回す
+from pymodbus.client import ModbusSerialClient
+import time
+
+# ロボットに接続
+client = ModbusSerialClient(
+    port='/dev/ttyUSB0',   # ラズパイのUSBポート
+    baudrate=115200,
+    timeout=0.5
+)
+client.connect()
 ```
 
-ここで大事なのは「Pythonから1行書くとロボットが動く」という体験です。
+### 速度を指令する
+
+モーターへの速度指令は、レジスタ `0x40`（左）と `0x41`（右）に書き込みます。
+単位は **mm/s**（ミリメートル毎秒）。
+
+```python
+# 左右100mm/sで前進
+client.write_registers(0x40, values=[100, 100], device_id=1)
+```
+
+これだけでロボットが動きます。**Pythonから1行書くとロボットが動く。**
+
+### 符号の壁
+
+後退させたい → マイナスの値を送りたい → しかしModbusのレジスタは **符号なし16bit（0〜65535）** です。
+
+```python
+# これだとエラーか意図しない動作になる
+client.write_registers(0x40, values=[-100, -100], device_id=1)  # NG
+```
+
+マイナスの値をModbusで送るには、**int16 → uint16** の変換が必要です。
+
+```python
+# -100 を uint16 に変換
+value = -100 & 0xFFFF   # → 65436 (0xFF9C)
+
+# ロボットのファーム側でこれを int16 として解釈する → -100
+```
+
+毎回これを書くのはめんどくさいですよね。
+
+### 安全タイムアウト
+
+もう一つ重要な仕様: **500ms以内に次の速度指令を書き込まないと、ロボットは自動停止します。**
+
+これは安全機能です。プログラムがフリーズしたり通信が切れても暴走しません。
+連続して動かすには、ループで繰り返し書き込む必要があります。
+
+---
+
+## 便利関数を作る
+
+毎回 `0x40` とか `& 0xFFFF` とか書きたくないですよね。**関数にまとめましょう。**
+
+```python
+def to_uint16(val):
+    """int16 を Modbus の uint16 に変換"""
+    return val & 0xFFFF
+
+def set_speed(left_mm_s, right_mm_s):
+    """左右の車輪速度を指令する (mm/s)"""
+    client.write_registers(
+        0x40,
+        values=[to_uint16(left_mm_s), to_uint16(right_mm_s)],
+        device_id=1
+    )
+
+def drive(left_mm_s, right_mm_s, duration_s):
+    """指定時間だけ走行する"""
+    start = time.time()
+    while time.time() - start < duration_s:
+        set_speed(left_mm_s, right_mm_s)
+        time.sleep(0.1)  # 100ms間隔（500msタイムアウト以内）
+    set_speed(0, 0)
+
+def stop():
+    """停止"""
+    set_speed(0, 0)
+```
+
+これで、以降はシンプルに書けます:
+
+```python
+drive(100, 100, 2.0)    # 2秒間前進
+drive(-100, -100, 2.0)  # 2秒間後退（マイナスもそのまま使える）
+stop()
+```
+
+**「面倒な処理を関数にまとめて再利用する」** — この先のレッスンでも同じパターンで便利関数を作っていきます。
 
 ---
 
@@ -27,34 +116,25 @@ robot.set_speed(left=100, right=100)  # 左右の車輪を同じ速度で回す
 ### 前進
 
 ```python
-# 左右の車輪を同じ速度で前に回す
-robot.set_speed(left=100, right=100)
-time.sleep(2)    # 2秒間動かす
-robot.set_speed(left=0, right=0)  # 停止
+drive(100, 100, 2.0)  # 左右100mm/sで2秒間
 ```
 
 ### 後退
 
 ```python
-# 速度をマイナスにすると後ろに進む
-robot.set_speed(left=-100, right=-100)
-time.sleep(2)
-robot.set_speed(left=0, right=0)
+drive(-100, -100, 2.0)  # マイナス = 後ろ
 ```
 
 ### 旋回（その場で回る）
 
 ```python
-# 左右逆方向に回すとその場で旋回する
-robot.set_speed(left=-100, right=100)  # 右旋回
-time.sleep(1)
-robot.set_speed(left=0, right=0)
+drive(-100, 100, 1.0)  # 左右逆方向 → 右旋回
 ```
 
 ### 停止
 
 ```python
-robot.set_speed(left=0, right=0)
+stop()
 ```
 
 ---
@@ -69,16 +149,13 @@ robot.set_speed(left=0, right=0)
 
 ### 時間を変えてみる
 
-- `sleep(2)` を `sleep(5)` にすると？ → もっと長く動く
-- `sleep(0.5)` にすると？ → ちょっとだけ動く
+- `drive(100, 100, 5.0)` → もっと長く動く
+- `drive(100, 100, 0.5)` → ちょっとだけ動く
 
 ### 左右差をつけてみる
 
 ```python
-# 左を速く、右をゆっくり → 右にカーブ
-robot.set_speed(left=150, right=50)
-time.sleep(3)
-robot.set_speed(left=0, right=0)
+drive(150, 50, 3.0)  # 左を速く、右をゆっくり → 右にカーブ
 ```
 
 「左右の速度差で曲がる」— これが差動二輪ロボットの基本原理です。
@@ -88,9 +165,10 @@ robot.set_speed(left=0, right=0)
 
 ## 気づいてほしいこと
 
-- 速度を決めると距離は時間で決まる（速度 × 時間 = 距離）
-- 左右の速度差で旋回する
-- 止める命令を送り忘れると、止まらない（安全に注意）
+- 速度の単位は **mm/s**。単位を意識する習慣はこの先ずっと重要
+- Modbusは符号なし16bitの世界。マイナスを送るには変換が要る
+- 安全タイムアウト（500ms）は暴走防止。ロボットでは安全設計が必須
+- 面倒な処理 → 関数にまとめる → 再利用。これがプログラミングの基本
 - 同じ命令でも毎回ちょっとだけ違う動きをする → **これが後で重要になる**
 
 最後の点 — 「理論通りに動かしても、現実にはズレが出る」。

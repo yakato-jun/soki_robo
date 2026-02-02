@@ -12,8 +12,8 @@
 Pythonを選んでいる最大の理由は **対話的に動かせる** こと。
 
 - 1行書いて実行 → 即座に結果が出る
-- `robot.set_speed(100, 100)` → ロボットが動く
-- `robot.get_encoder()` → センサの値が返ってくる
+- `set_speed(100, 100)` → ロボットが動く
+- `read_encoder()` → センサの値が返ってくる
 
 **書いた瞬間にロボットが動く。** これがPythonを使う理由です。
 C言語のように「コンパイルして、転送して、実行して…」ではなく、
@@ -42,13 +42,17 @@ C言語のように「コンパイルして、転送して、実行して…」�
 ラズパイにSSHして `python3` と打てば、ターミナル上でも対話的にPythonが使えます。
 
 ```python
->>> import robot
->>> robot.set_speed(100, 100)   # その場でロボットが動く
->>> robot.get_encoder()
-{'left': 1234, 'right': 1230}
+>>> from pymodbus.client import ModbusSerialClient
+>>> client = ModbusSerialClient(port='/dev/ttyUSB0', baudrate=115200)
+>>> client.connect()
+True
+>>> client.write_registers(0x40, values=[100, 100], device_id=1)  # ロボットが動く
+>>> client.write_registers(0x40, values=[0, 0], device_id=1)      # 停止
 ```
 
 Jupyterを立ち上げるまでもない「ちょっと動かしたい」ときに便利です。
+次のレッスンで `set_speed()` や `read_encoder()` といった便利関数を作るので、
+実際にはもっとシンプルに書けるようになります。
 
 ### 数学だけのとき（大枠2の練習）
 
