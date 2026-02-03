@@ -145,9 +145,8 @@ install_jupyter() {
 # =============================================================================
 check_vnc_deps() {
     local missing=()
-    local optional_missing=()
 
-    for pkg in tigervnc-standalone-server novnc python3-websockify; do
+    for pkg in xfce4 tigervnc-standalone-server novnc python3-websockify; do
         if ! dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
             missing+=("$pkg")
         fi
@@ -159,23 +158,6 @@ check_vnc_deps() {
         sudo apt-get install -y "${missing[@]}"
     else
         info "VNC: 必須パッケージ OK"
-    fi
-
-    # xfce4 はオプション (推奨)
-    if ! dpkg -l xfce4 2>/dev/null | grep -q '^ii'; then
-        echo ""
-        warn "xfce4 が未インストールです。VNC デスクトップとして xfce4 を推奨します。"
-        echo -e "  インストールするには: ${CYAN}sudo apt install xfce4${NC}"
-        echo ""
-        read -rp "  今すぐ xfce4 をインストールしますか？ [y/N]: " answer
-        if [[ "$answer" =~ ^[Yy]$ ]]; then
-            sudo apt-get install -y xfce4
-            info "xfce4: インストール完了"
-        else
-            warn "xfce4 なしで続行します (xstartup で代替 DE を検出します)"
-        fi
-    else
-        info "VNC: xfce4 OK"
     fi
 }
 

@@ -1,6 +1,8 @@
 [Unit]
 Description=Jupyter Notebook for soki_robo
 After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 Type=simple
@@ -13,8 +15,6 @@ ExecStart=@@PROJECT_ROOT@@/.venv/bin/jupyter-notebook \
     --NotebookApp.token='' --NotebookApp.password=''
 Restart=on-failure
 RestartSec=5
-StartLimitIntervalSec=60
-StartLimitBurst=3
 
 [Install]
 WantedBy=default.target

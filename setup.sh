@@ -132,17 +132,7 @@ if command -v ros2 &> /dev/null; then
 elif dpkg -l ros-jazzy-desktop &> /dev/null 2>&1; then
     info "ROS2 Jazzy ... インストール済み (source /opt/ros/jazzy/setup.bash が必要)"
 else
-    echo ""
-    read -rp "ROS2 Jazzy をインストールしますか？ [y/N]: " ans
-    case "$ans" in
-        [yY]|[yY][eE][sS])
-            install_ros2
-            ;;
-        *)
-            info "ROS2 のインストールをスキップ"
-            warn "後で手動でインストールする場合: ./setup.sh を再実行してください"
-            ;;
-    esac
+    install_ros2
 fi
 
 # ROS2 がインストール済みなら追加パッケージをインストール
@@ -151,7 +141,12 @@ if dpkg -l ros-jazzy-desktop &> /dev/null 2>&1; then
 fi
 
 # =============================================================================
-# 5. シリアルポート確認
+# 5. サービス (Jupyter, VNC, noVNC)
+# =============================================================================
+"${SCRIPT_DIR}/utils/service_manager/install-services.sh"
+
+# =============================================================================
+# 6. シリアルポート確認
 # =============================================================================
 echo ""
 info "シリアルポート確認..."
@@ -163,152 +158,31 @@ else
 fi
 
 # =============================================================================
-# 6. 接続テスト
+# 7. MCU 接続テスト
 # =============================================================================
 echo ""
 read -rp "MCU との Modbus 接続テストを実行しますか？ [y/N]: " ans
 case "$ans" in
     [yY]|[yY][eE][sS])
-        # ポート自動検出
-        SERIAL_PORT=""
-        for p in /dev/ttyUSB0 /dev/ttyUSB1 /dev/ttyACM0; do
-            if [[ -e "$p" ]]; then
-                SERIAL_PORT="$p"
-                break
-            fi
-        done
-
-        if [[ -z "$SERIAL_PORT" ]]; then
-            warn "シリアルポートが見つかりません。テストをスキップします。"
-        else
-            info "接続テスト (${SERIAL_PORT})..."
-            "$VENV_DIR/bin/python" -c "
-from pymodbus.client import ModbusSerialClient
-import struct, sys
-
-client = ModbusSerialClient(port='${SERIAL_PORT}', baudrate=115200, timeout=1)
-if not client.connect():
-    print('  接続失敗: ポートを開けません')
-    sys.exit(1)
-
-# ステータス + ハートビート
-result = client.read_holding_registers(0x00, count=2, device_id=1)
-if result.isError():
-    print('  応答なし: MCU がリセット済みか確認してください')
-    client.close()
-    sys.exit(1)
-
-status = result.registers[0]
-hb = result.registers[1]
-imu_ok = bool(status & 0x01)
-motor_ok = bool(status & 0x02)
-print(f'  STATUS:    IMU_OK={imu_ok}, Motor_OK={motor_ok}')
-print(f'  HEARTBEAT: {hb}')
-
-# IMU + Mag
-result = client.read_holding_registers(0x10, count=9, device_id=1)
-if not result.isError():
-    vals = [r if r < 0x8000 else r - 0x10000 for r in result.registers]
-    print(f'  ACCEL:     X={vals[0]}, Y={vals[1]}, Z={vals[2]}')
-    print(f'  GYRO:      X={vals[3]}, Y={vals[4]}, Z={vals[5]}')
-    print(f'  MAG:       X={vals[6]}, Y={vals[7]}, Z={vals[8]}')
-
-# Quaternion
-result = client.read_holding_registers(0x20, count=8, device_id=1)
-if not result.isError():
-    regs = result.registers
-    quats = []
-    for i in range(4):
-        raw = regs[i*2] | (regs[i*2+1] << 16)
-        f = struct.unpack('<f', struct.pack('<I', raw))[0]
-        quats.append(f)
-    print(f'  QUAT:      W={quats[0]:.4f}, X={quats[1]:.4f}, Y={quats[2]:.4f}, Z={quats[3]:.4f}')
-
-# エンコーダ・速度
-result = client.read_holding_registers(0x30, count=6, device_id=1)
-if not result.isError():
-    r = result.registers
-    enc_l = (r[0] << 16) | r[1]
-    enc_r = (r[2] << 16) | r[3]
-    if enc_l >= 0x80000000: enc_l -= 0x100000000
-    if enc_r >= 0x80000000: enc_r -= 0x100000000
-    spd_l = r[4] if r[4] < 0x8000 else r[4] - 0x10000
-    spd_r = r[5] if r[5] < 0x8000 else r[5] - 0x10000
-    print(f'  ENCODER:   L={enc_l}, R={enc_r}')
-    print(f'  SPEED:     L={spd_l} mm/s, R={spd_r} mm/s')
-
-client.close()
-print()
-print('  接続テスト OK')
-" && info "接続テスト ... OK" || warn "接続テストに失敗しました"
-        fi
+        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/utils/test_mcu.py" \
+            && info "MCU 接続テスト ... OK" \
+            || warn "MCU 接続テストに失敗しました"
         ;;
     *)
-        info "接続テストをスキップ"
+        info "MCU 接続テストをスキップ"
         ;;
 esac
 
 # =============================================================================
-# 7. LiDAR 接続テスト (RPLIDAR A1M8)
+# 8. LiDAR 接続テスト
 # =============================================================================
 echo ""
 read -rp "LiDAR (RPLIDAR A1M8) の接続テストを実行しますか？ [y/N]: " ans
 case "$ans" in
     [yY]|[yY][eE][sS])
-        # MCU と別のポートを探す
-        LIDAR_PORT=""
-        for p in /dev/ttyUSB1 /dev/ttyUSB0 /dev/ttyUSB2; do
-            if [[ -e "$p" ]]; then
-                LIDAR_PORT="$p"
-                break
-            fi
-        done
-
-        if [[ -z "$LIDAR_PORT" ]]; then
-            warn "シリアルポートが見つかりません。テストをスキップします。"
-        else
-            read -rp "  LiDAR のポートは ${LIDAR_PORT} で合っていますか？ [Y/n]: " port_ans
-            case "$port_ans" in
-                [nN]|[nN][oO])
-                    read -rp "  ポートを入力してください (例: /dev/ttyUSB1): " LIDAR_PORT
-                    ;;
-            esac
-            info "LiDAR 接続テスト (${LIDAR_PORT})..."
-            "$VENV_DIR/bin/python" -c "
-from rplidar import RPLidar
-import sys
-
-lidar = RPLidar(port='${LIDAR_PORT}', baudrate=115200, timeout=1)
-try:
-    info = lidar.get_info()
-    print(f'  Model:     {info[\"model\"]}')
-    print(f'  Firmware:  {info[\"firmware\"]}')
-    print(f'  Hardware:  {info[\"hardware\"]}')
-
-    health = lidar.get_health()
-    print(f'  Health:    {health[0]} (code: {health[1]})')
-    if health[0] == 'Error':
-        print('  センサがエラー状態です。リセットが必要です。')
-        sys.exit(1)
-
-    # 1スキャンだけ取得して確認
-    for i, scan in enumerate(lidar.iter_scans(max_buf_meas=500)):
-        valid = [(q, a, d) for q, a, d in scan if d > 0]
-        print(f'  Scan:      {len(valid)} valid points')
-        if valid:
-            min_d = min(d for _, _, d in valid)
-            max_d = max(d for _, _, d in valid)
-            print(f'  Range:     {min_d:.0f} - {max_d:.0f} mm')
-        break
-
-    print()
-    print('  LiDAR 接続テスト OK')
-finally:
-    lidar.stop()
-    lidar.stop_motor()
-    lidar.disconnect()
-" && info "LiDAR 接続テスト ... OK" || warn "LiDAR 接続テストに失敗しました"
-        fi
+        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/utils/test_lidar.py" \
+            && info "LiDAR 接続テスト ... OK" \
+            || warn "LiDAR 接続テストに失敗しました"
         ;;
     *)
         info "LiDAR テストをスキップ"

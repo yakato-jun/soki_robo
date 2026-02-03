@@ -1,13 +1,10 @@
 #ifndef SOKI_HARDWARE__SOKI_SYSTEM_HPP_
 #define SOKI_HARDWARE__SOKI_SYSTEM_HPP_
 
-#include <memory>
 #include <string>
-#include <vector>
 
 #include "hardware_interface/system_interface.hpp"
-#include "hardware_interface/handle.hpp"
-#include "hardware_interface/hardware_info.hpp"
+#include "hardware_interface/types/hardware_component_interface_params.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/state.hpp"
@@ -26,7 +23,7 @@ public:
 
   SOKI_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_init(
-    const hardware_interface::HardwareInfo & info) override;
+    const hardware_interface::HardwareComponentInterfaceParams & params) override;
 
   SOKI_HARDWARE_PUBLIC
   hardware_interface::CallbackReturn on_configure(
@@ -45,12 +42,6 @@ public:
     const rclcpp_lifecycle::State & previous_state) override;
 
   SOKI_HARDWARE_PUBLIC
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
-
-  SOKI_HARDWARE_PUBLIC
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
-
-  SOKI_HARDWARE_PUBLIC
   hardware_interface::return_type read(
     const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
@@ -67,22 +58,14 @@ private:
 
   // Robot parameters
   double wheel_radius_ = 0.0335;
-  double wheel_separation_ = 0.17;
   int encoder_cpr_ = 440;
-
-  // Joint state (left, right)
-  double hw_positions_[2] = {0.0, 0.0};
-  double hw_velocities_[2] = {0.0, 0.0};
-  double hw_commands_[2] = {0.0, 0.0};
 
   // Previous encoder ticks for position tracking
   int32_t prev_encoder_[2] = {0, 0};
   bool first_read_ = true;
 
-  // IMU state
-  double imu_orientation_[4] = {0.0, 0.0, 0.0, 1.0};  // x, y, z, w
-  double imu_angular_velocity_[3] = {0.0, 0.0, 0.0};
-  double imu_linear_acceleration_[3] = {0.0, 0.0, 0.0};
+  // Accumulated wheel positions (rad)
+  double hw_positions_[2] = {0.0, 0.0};
 
   // Unit conversion constants
   static constexpr double ACCEL_SCALE = 16.0 / 32768.0 * 9.80665;

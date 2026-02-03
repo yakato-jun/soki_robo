@@ -1,17 +1,8 @@
 #!/bin/sh
 # soki_robo VNC デスクトップ起動スクリプト
-# xfce4 が軽量で VNC に最適。なければ GNOME、最終手段で xterm
+# 対象環境: Raspberry Pi + Ubuntu 24.04 + xfce4
 
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 
-if command -v startxfce4 >/dev/null 2>&1; then
-    exec startxfce4
-elif command -v gnome-session >/dev/null 2>&1; then
-    export XDG_SESSION_TYPE=x11
-    exec gnome-session
-else
-    # 最低限: xterm だけ起動
-    xterm &
-    exec openbox-session 2>/dev/null || wait
-fi
+exec startxfce4

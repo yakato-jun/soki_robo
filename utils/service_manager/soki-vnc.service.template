@@ -1,6 +1,8 @@
 [Unit]
 Description=TigerVNC Server for soki_robo (display :1)
 After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 Type=forking
@@ -10,8 +12,6 @@ ExecStop=/usr/bin/vncserver -kill :1
 PIDFile=/home/%u/.vnc/%H:1.pid
 Restart=on-failure
 RestartSec=5
-StartLimitIntervalSec=60
-StartLimitBurst=3
 
 [Install]
 WantedBy=default.target
