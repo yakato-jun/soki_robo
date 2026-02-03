@@ -239,15 +239,11 @@ install_vnc() {
     # --- パッケージチェック ---
     check_vnc_deps
 
-    # --- xstartup を ~/.vnc/ に配置 (既存なら上書きしない) ---
+    # --- xstartup を ~/.vnc/ に配置 ---
     mkdir -p "${HOME}/.vnc"
-    if [[ ! -f "${HOME}/.vnc/xstartup" ]]; then
-        cp "$XSTARTUP_SRC" "${HOME}/.vnc/xstartup"
-        chmod +x "${HOME}/.vnc/xstartup"
-        info "xstartup を配置: ${HOME}/.vnc/xstartup"
-    else
-        info "xstartup は既に存在します。上書きしません: ${HOME}/.vnc/xstartup"
-    fi
+    cp "$XSTARTUP_SRC" "${HOME}/.vnc/xstartup"
+    chmod +x "${HOME}/.vnc/xstartup"
+    info "xstartup を配置: ${HOME}/.vnc/xstartup"
 
     # --- systemd ユーザーディレクトリ作成 ---
     mkdir -p "$SYSTEMD_USER_DIR"
