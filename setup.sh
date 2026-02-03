@@ -107,6 +107,25 @@ http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo "$UBUNTU_CODENAM
     info "ROS2 Jazzy ... OK"
 }
 
+install_ros2_packages() {
+    info "ROS2 追加パッケージをインストール..."
+    sudo apt install -y -qq \
+        ros-jazzy-ros2-control \
+        ros-jazzy-ros2-controllers \
+        ros-jazzy-robot-localization \
+        ros-jazzy-rplidar-ros \
+        ros-jazzy-nav2-bringup \
+        ros-jazzy-navigation2 \
+        ros-jazzy-slam-toolbox \
+        ros-jazzy-robot-state-publisher \
+        ros-jazzy-xacro \
+        ros-jazzy-joint-state-publisher-gui \
+        ros-jazzy-teleop-twist-keyboard \
+        libmodbus-dev \
+        > /dev/null
+    info "ROS2 追加パッケージ ... OK"
+}
+
 if command -v ros2 &> /dev/null; then
     ROS2_VERSION=$(ros2 --version 2>/dev/null || echo "unknown")
     info "ROS2 ... 既にインストール済み (${ROS2_VERSION})"
@@ -124,6 +143,11 @@ else
             warn "後で手動でインストールする場合: ./setup.sh を再実行してください"
             ;;
     esac
+fi
+
+# ROS2 がインストール済みなら追加パッケージをインストール
+if dpkg -l ros-jazzy-desktop &> /dev/null 2>&1; then
+    install_ros2_packages
 fi
 
 # =============================================================================

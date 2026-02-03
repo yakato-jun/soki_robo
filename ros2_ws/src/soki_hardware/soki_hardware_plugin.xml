@@ -1,0 +1,10 @@
+<library path="soki_hardware">
+  <class name="soki_hardware/SokiSystemHardware"
+         type="soki_hardware::SokiSystemHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware interface for soki_robo differential drive robot.
+      Communicates with MSPM0G3507 MCU via Modbus RTU.
+    </description>
+  </class>
+</library>

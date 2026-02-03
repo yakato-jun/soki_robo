@@ -1,0 +1,48 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 30  # Modbus cycle ~34ms
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+    imu_sensor_broadcaster:
+      type: imu_sensor_broadcaster/IMUSensorBroadcaster
+
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
+
+    wheel_separation: 0.17    # PLACEHOLDER: 要実測
+    wheel_radius: 0.0335
+
+    # Use encoder feedback (not open-loop)
+    open_loop: false
+    position_feedback: true
+
+    # Odometry
+    odom_frame_id: odom
+    base_frame_id: base_footprint
+    publish_rate: 30.0
+    enable_odom_tf: false     # EKF が odom→base_footprint TF を出す
+
+    # Velocity limits
+    linear.x.has_velocity_limits: true
+    linear.x.max_velocity: 0.5
+    linear.x.has_acceleration_limits: true
+    linear.x.max_acceleration: 1.0
+    angular.z.has_velocity_limits: true
+    angular.z.max_velocity: 2.0
+    angular.z.has_acceleration_limits: true
+    angular.z.max_acceleration: 3.0
+
+    # cmd_vel timeout
+    cmd_vel_timeout: 0.5
+
+imu_sensor_broadcaster:
+  ros__parameters:
+    sensor_name: imu_sensor
+    frame_id: imu_link
