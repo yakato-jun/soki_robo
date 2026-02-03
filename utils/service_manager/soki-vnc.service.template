@@ -1,5 +1,5 @@
 [Unit]
-Description=TigerVNC Server for soki_robo (display :1)
+Description=TigerVNC Server for soki_robo (display :2)
 After=network-online.target
 StartLimitIntervalSec=60
 StartLimitBurst=3
@@ -7,9 +7,9 @@ StartLimitBurst=3
 [Service]
 Type=forking
 ExecStartPre=/bin/sh -c 'mkdir -p ~/.vnc && cp @@PROJECT_ROOT@@/utils/service_manager/soki-vnc-xstartup ~/.vnc/xstartup && chmod +x ~/.vnc/xstartup'
-ExecStart=/usr/bin/vncserver :1 -geometry 1280x720 -depth 24 -SecurityTypes None -localhost yes --I-KNOW-THIS-IS-INSECURE
-ExecStop=/usr/bin/vncserver -kill :1
-PIDFile=/home/%u/.vnc/%H:1.pid
+ExecStart=/usr/bin/vncserver :2 -geometry 1280x720 -depth 24 -SecurityTypes None -localhost yes --I-KNOW-THIS-IS-INSECURE
+ExecStop=/usr/bin/vncserver -kill :2
+PIDFile=/home/%u/.vnc/%H:2.pid
 Restart=on-failure
 RestartSec=5
 

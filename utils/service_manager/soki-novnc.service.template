@@ -7,7 +7,7 @@ StartLimitBurst=3
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/websockify --web=/usr/share/novnc/ 6080 localhost:5901
+ExecStart=/usr/bin/websockify --web=/usr/share/novnc/ 6080 localhost:5902
 Restart=on-failure
 RestartSec=5
 
