@@ -42,14 +42,13 @@ echo ""
 # 1. システムパッケージ
 # =============================================================================
 info "システムパッケージを更新・インストール..."
-sudo apt update -qq
-sudo apt install -y -qq \
+sudo apt update
+sudo apt install -y \
     python3-pip \
     python3-venv \
     git \
     curl \
-    software-properties-common \
-    > /dev/null
+    software-properties-common
 
 info "システムパッケージ ... OK"
 
@@ -77,8 +76,8 @@ else
 fi
 
 info "Python パッケージをインストール..."
-"$VENV_DIR/bin/pip" install --upgrade pip -q
-"$VENV_DIR/bin/pip" install -r "${SCRIPT_DIR}/python/requirements.txt" -q
+"$VENV_DIR/bin/pip" install --upgrade pip
+"$VENV_DIR/bin/pip" install -r "${SCRIPT_DIR}/python/requirements.txt"
 
 info "Python 環境 ... OK"
 echo "  インストール済みパッケージ:"
@@ -99,12 +98,11 @@ install_ros2() {
 http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo "$UBUNTU_CODENAME") main" \
         | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
 
-    sudo apt update -qq
-    sudo apt install -y -qq \
+    sudo apt update
+    sudo apt install -y \
         ros-jazzy-desktop \
         ros-dev-tools \
-        python3-colcon-common-extensions \
-        > /dev/null
+        python3-colcon-common-extensions
 
     info "ROS2 Jazzy ... OK"
 }
