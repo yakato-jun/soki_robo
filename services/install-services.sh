@@ -6,6 +6,7 @@
 #   - Jupyter Notebook  (soki-jupyter.service)
 #   - TigerVNC Server   (soki-vnc.service)
 #   - noVNC Web Client  (soki-novnc.service)
+#   - UPS Monitor       (soki-ups.service)
 #
 # ログアウト後もサービスが維持されるため、RPi の電源を入れるだけで
 # ネットワーク経由で各サービスにアクセスできます。
@@ -40,7 +41,7 @@ fi
 
 # --- パス設定 ---
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SYSTEMD_USER_DIR="${HOME}/.config/systemd/user"
 
 # Jupyter
@@ -53,6 +54,10 @@ VNC_TEMPLATE="${SCRIPT_DIR}/soki-vnc.service.template"
 NOVNC_SERVICE="soki-novnc.service"
 NOVNC_TEMPLATE="${SCRIPT_DIR}/soki-novnc.service.template"
 XSTARTUP_SRC="${SCRIPT_DIR}/soki-vnc-xstartup"
+
+# UPS Monitor
+UPS_SERVICE="soki-ups.service"
+UPS_TEMPLATE="${SCRIPT_DIR}/soki-ups.service.template"
 
 # --- LAN IP 取得 ---
 get_lan_ip() {
@@ -265,6 +270,73 @@ install_vnc() {
 }
 
 # =============================================================================
+# UPS Monitor: ステータス表示
+# =============================================================================
+status_ups() {
+    echo ""
+    echo -e "  ${CYAN}--- UPS Battery Monitor ---${NC}"
+
+    if [[ ! -f "${SYSTEMD_USER_DIR}/${UPS_SERVICE}" ]]; then
+        warn "  UPS Monitor: 未インストール"
+        return
+    fi
+
+    systemctl --user status "$UPS_SERVICE" --no-pager 2>&1 || true
+}
+
+# =============================================================================
+# UPS Monitor: アンインストール
+# =============================================================================
+uninstall_ups() {
+    echo ""
+    info "UPS Monitor サービスをアンインストール..."
+
+    if [[ ! -f "${SYSTEMD_USER_DIR}/${UPS_SERVICE}" ]]; then
+        warn "UPS Monitor: 未インストールです。スキップします。"
+        return
+    fi
+
+    systemctl --user stop "$UPS_SERVICE" 2>/dev/null || true
+    systemctl --user disable "$UPS_SERVICE" 2>/dev/null || true
+    rm -f "${SYSTEMD_USER_DIR}/${UPS_SERVICE}"
+
+    info "UPS Monitor: アンインストール完了"
+}
+
+# =============================================================================
+# UPS Monitor: インストール
+# =============================================================================
+install_ups() {
+    echo ""
+    info "UPS Monitor サービスをインストール..."
+
+    if [[ ! -f "$UPS_TEMPLATE" ]]; then
+        error "テンプレートが見つかりません: ${UPS_TEMPLATE}"
+    fi
+
+    if [[ ! -d "${PROJECT_ROOT}/.venv" ]]; then
+        error ".venv が見つかりません。先に setup.sh を実行してください。"
+    fi
+
+    # I2C デバイス確認
+    if [[ ! -e /dev/i2c-1 ]]; then
+        warn "I2C デバイス (/dev/i2c-1) が見つかりません。UPS Monitor をスキップします。"
+        return
+    fi
+
+    info "UPS Monitor: 前提条件 OK"
+
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    sed "s|@@PROJECT_ROOT@@|${PROJECT_ROOT}|g" "$UPS_TEMPLATE" \
+        > "${SYSTEMD_USER_DIR}/${UPS_SERVICE}"
+    info "  → ${SYSTEMD_USER_DIR}/${UPS_SERVICE}"
+
+    systemctl --user enable --now "$UPS_SERVICE"
+    info "UPS Monitor: インストール完了"
+}
+
+# =============================================================================
 # 統合: ステータス表示
 # =============================================================================
 show_status() {
@@ -275,6 +347,7 @@ show_status() {
 
     status_jupyter
     status_vnc
+    status_ups
 
     echo ""
 }
@@ -288,6 +361,7 @@ do_uninstall() {
     echo "  soki_robo サービス アンインストール"
     echo "============================================"
 
+    uninstall_ups
     uninstall_vnc
     uninstall_jupyter
 
@@ -315,6 +389,7 @@ do_install() {
 
     install_jupyter
     install_vnc
+    install_ups
 
     # --- systemd 再読み込み ---
     info "systemd を再読み込み..."
@@ -343,8 +418,10 @@ do_install() {
     echo "    ログ確認:  journalctl --user -u ${JUPYTER_SERVICE} -f"
     echo "              journalctl --user -u ${VNC_SERVICE} -f"
     echo "              journalctl --user -u ${NOVNC_SERVICE} -f"
+    echo "              journalctl --user -u ${UPS_SERVICE} -f"
     echo "    再起動:    systemctl --user restart ${JUPYTER_SERVICE}"
     echo "              systemctl --user restart ${VNC_SERVICE} ${NOVNC_SERVICE}"
+    echo "              systemctl --user restart ${UPS_SERVICE}"
     echo ""
 }
 

@@ -6,17 +6,25 @@
 
 ```
 soki_robo/
+├── requirements.txt  # Python 依存パッケージ (.venv 用)
+├── setup.sh          # RPi セットアップスクリプト
 ├── lessons/          # レッスン（段階的に学習）
-├── python/           # Python サンプル・ライブラリ
-│   ├── examples/     # サンプルスクリプト
-│   └── requirements.txt
+├── scripts/          # Python スクリプト (テスト・デーモン)
+│   ├── test_mcu.py       # MCU 接続テスト
+│   ├── test_lidar.py     # LiDAR 接続テスト
+│   └── ups_monitor.py    # UPS バッテリー監視デーモン
+├── examples/         # Jupyter ノートブック
+│   ├── motor_test.ipynb   # モーター動作テスト
+│   └── ups_monitor.ipynb  # UPS バッテリーモニター
+├── services/         # systemd サービス管理
+│   ├── install-services.sh
+│   └── *.service.template
 ├── ros2_ws/          # ROS2 ワークスペース
 │   └── src/
 │       ├── soki_bringup/      # 起動・設定
 │       ├── soki_description/  # URDF・モデル
+│       ├── soki_hardware/     # ハードウェアインターフェース
 │       └── soki_navigation/   # ナビゲーション
-├── utils/            # ユーティリティ
-│   └── service_manager/  # RPi サービス自動起動管理
 └── firmware/         # MSPM0 ファームウェア
     ├── soki_main/   # メインファームウェア（Modbus RTU スレーブ）
     ├── examples/     # 個別機能の実験用プロジェクト
@@ -34,10 +42,10 @@ soki_robo/
 
 ```
 Raspberry Pi (Python / ROS2)
-  │  Modbus RTU over USB Serial
+  │  Modbus RTU over GPIO UART (PA25/PA26 ↔ GPIO14/GPIO15)
   └─→ MSPM0G3507
-        ├─ UART0: RPi通信
-        ├─ UART1: モータードライバ通信
+        ├─ UART3 (PA26 TX / PA25 RX): RPi通信
+        ├─ UART1 (PB6 TX / PB7 RX): モータードライバ通信
         ├─ I2C: IMU (0x23)
         └─ エンコーダ x2
 ```

@@ -46,6 +46,8 @@ sudo apt update
 sudo apt install -y \
     python3-pip \
     python3-venv \
+    python3-smbus \
+    i2c-tools \
     git \
     curl \
     software-properties-common
@@ -53,15 +55,17 @@ sudo apt install -y \
 info "システムパッケージ ... OK"
 
 # =============================================================================
-# 2. シリアルポート権限 (dialout グループ)
+# 2. デバイス権限 (dialout + i2c グループ)
 # =============================================================================
-if groups "$USER" | grep -q '\bdialout\b'; then
-    info "シリアルポート権限 ... OK (dialout グループ所属済み)"
-else
-    info "dialout グループに追加 (シリアルポートアクセス用)..."
-    sudo usermod -aG dialout "$USER"
-    warn "権限反映のため、セットアップ完了後に再ログインしてください"
-fi
+for grp in dialout i2c; do
+    if groups "$USER" | grep -q "\b${grp}\b"; then
+        info "${grp} グループ ... OK (所属済み)"
+    else
+        info "${grp} グループに追加..."
+        sudo usermod -aG "$grp" "$USER"
+        warn "権限反映のため、セットアップ完了後に再ログインしてください"
+    fi
+done
 
 # =============================================================================
 # 3. Python 仮想環境 + 依存パッケージ
@@ -77,7 +81,7 @@ fi
 
 info "Python パッケージをインストール..."
 "$VENV_DIR/bin/pip" install --upgrade pip
-"$VENV_DIR/bin/pip" install -r "${SCRIPT_DIR}/python/requirements.txt"
+"$VENV_DIR/bin/pip" install -r "${SCRIPT_DIR}/requirements.txt"
 
 info "Python 環境 ... OK"
 echo "  インストール済みパッケージ:"
@@ -143,7 +147,7 @@ fi
 # =============================================================================
 # 5. サービス (Jupyter, VNC, noVNC)
 # =============================================================================
-"${SCRIPT_DIR}/utils/service_manager/install-services.sh"
+"${SCRIPT_DIR}/services/install-services.sh"
 
 # =============================================================================
 # 6. GPIO UART 有効化 (RPi 5: MCU との Modbus RTU 通信用)
@@ -185,7 +189,7 @@ echo ""
 read -rp "MCU との Modbus 接続テストを実行しますか？ [y/N]: " ans
 case "$ans" in
     [yY]|[yY][eE][sS])
-        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/utils/test_mcu.py" \
+        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/scripts/test_mcu.py" \
             && info "MCU 接続テスト ... OK" \
             || warn "MCU 接続テストに失敗しました"
         ;;
@@ -201,7 +205,7 @@ echo ""
 read -rp "LiDAR (RPLIDAR A1M8) の接続テストを実行しますか？ [y/N]: " ans
 case "$ans" in
     [yY]|[yY][eE][sS])
-        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/utils/test_lidar.py" \
+        "$VENV_DIR/bin/python" "${SCRIPT_DIR}/scripts/test_lidar.py" \
             && info "LiDAR 接続テスト ... OK" \
             || warn "LiDAR 接続テストに失敗しました"
         ;;

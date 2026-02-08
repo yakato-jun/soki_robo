@@ -1,0 +1,14 @@
+[Unit]
+Description=UPS Plus Battery Monitor for soki_robo
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@@PROJECT_ROOT@@
+Environment="PATH=@@PROJECT_ROOT@@/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=@@PROJECT_ROOT@@/.venv/bin/python3 @@PROJECT_ROOT@@/scripts/ups_monitor.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

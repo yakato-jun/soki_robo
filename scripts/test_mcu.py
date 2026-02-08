@@ -2,7 +2,7 @@
 """MCU (MSPM0G3507) Modbus RTU 接続テスト
 
 使い方:
-  python3 utils/test_mcu.py [ポート]
+  python3 scripts/test_mcu.py [ポート]
 
 ポート省略時は /dev/ttyAMA0 (GPIO UART) を優先し、なければ USB シリアルを探します。
 """

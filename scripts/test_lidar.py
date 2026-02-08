@@ -2,7 +2,7 @@
 """LiDAR (RPLIDAR A1M8) 接続テスト
 
 使い方:
-  python3 utils/test_lidar.py [ポート]
+  python3 scripts/test_lidar.py [ポート]
 
 ポート省略時は /dev/ttyUSB1, /dev/ttyUSB0, /dev/ttyUSB2 を順に探します。
 """
