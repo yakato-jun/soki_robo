@@ -4,7 +4,7 @@
   <ros2_control name="soki_hardware" type="system">
     <hardware>
       <plugin>soki_hardware/SokiSystemHardware</plugin>
-      <param name="serial_port">/dev/ttyAMA0</param>     <!-- PLACEHOLDER: GPIO UART ピン未定 -->
+      <param name="serial_port">/dev/ttyAMA0</param>     <!-- GPIO UART: RPi GPIO14(TX)/GPIO15(RX) ↔ MCU PA25(TX)/PA26(RX) -->
       <param name="baud_rate">115200</param>
       <param name="slave_id">1</param>
       <param name="wheel_radius">0.0335</param>

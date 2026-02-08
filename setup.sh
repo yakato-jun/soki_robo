@@ -146,19 +146,40 @@ fi
 "${SCRIPT_DIR}/utils/service_manager/install-services.sh"
 
 # =============================================================================
-# 6. シリアルポート確認
+# 6. GPIO UART 有効化 (RPi 5: MCU との Modbus RTU 通信用)
 # =============================================================================
-echo ""
-info "シリアルポート確認..."
-if ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null; then
-    echo "  上記のポートが見つかりました"
-    echo "  (通常: ttyUSB0=MCU(Modbus), ttyUSB1=LiDAR。接続順で変わります)"
+info "GPIO UART 設定を確認..."
+BOOT_CONFIG="/boot/firmware/config.txt"
+if [[ -f "$BOOT_CONFIG" ]]; then
+    if grep -q 'dtoverlay=uart0-pi5' "$BOOT_CONFIG"; then
+        info "GPIO UART (uart0-pi5) ... 既に有効"
+    else
+        info "GPIO UART (uart0-pi5) を有効化..."
+        sudo sed -i '/^\[all\]$/a dtoverlay=uart0-pi5' "$BOOT_CONFIG"
+        warn "GPIO UART を有効化しました。反映には再起動が必要です"
+        NEED_REBOOT=1
+    fi
 else
-    warn "シリアルポートが見つかりません。MCU / LiDAR が接続されているか確認してください。"
+    warn "$BOOT_CONFIG が見つかりません。手動で dtoverlay=uart0-pi5 を追加してください"
 fi
 
 # =============================================================================
-# 7. MCU 接続テスト
+# 7. シリアルポート確認
+# =============================================================================
+echo ""
+info "シリアルポート確認..."
+if ls /dev/ttyAMA0 2>/dev/null; then
+    echo "  /dev/ttyAMA0 (GPIO UART) ... MCU (Modbus RTU)"
+fi
+if ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null; then
+    echo "  上記の USB シリアルポートが見つかりました (LiDAR 等)"
+fi
+if ! ls /dev/ttyAMA0 /dev/ttyUSB* /dev/ttyACM* 2>/dev/null; then
+    warn "シリアルポートが見つかりません。再起動が必要か、デバイスが接続されているか確認してください。"
+fi
+
+# =============================================================================
+# 8. MCU 接続テスト
 # =============================================================================
 echo ""
 read -rp "MCU との Modbus 接続テストを実行しますか？ [y/N]: " ans
@@ -174,7 +195,7 @@ case "$ans" in
 esac
 
 # =============================================================================
-# 8. LiDAR 接続テスト
+# 9. LiDAR 接続テスト
 # =============================================================================
 echo ""
 read -rp "LiDAR (RPLIDAR A1M8) の接続テストを実行しますか？ [y/N]: " ans

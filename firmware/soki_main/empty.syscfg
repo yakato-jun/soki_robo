@@ -62,13 +62,13 @@ GPIO1.associatedPins[0].initialValue = "SET";
 GPIO1.associatedPins[1].$name        = "SCL";
 GPIO1.associatedPins[1].initialValue = "SET";
 
-/* UART0: Modbus RTU (RPi) — PA10 TX, PA11 RX */
+/* UART0: Modbus RTU (RPi) — PA25 TX, PA26 RX via GPIO UART */
 UART1.$name                    = "UART_0";
 UART1.uartClkSrc               = "MFCLK";
 UART1.enabledInterrupts        = ["RX"];
 UART1.targetBaudRate           = 115200;
-UART1.peripheral.rxPin.$assign = "PA11";
-UART1.peripheral.txPin.$assign = "PA10";
+UART1.peripheral.rxPin.$assign = "PA25";
+UART1.peripheral.txPin.$assign = "PA26";
 UART1.txPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
 UART1.rxPinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric1";
 
@@ -95,4 +95,3 @@ TIMER1.peripheral.$suggestSolution         = "TIMA0";
 TIMER2.peripheral.$suggestSolution         = "TIMG0";
 GPIO1.associatedPins[0].pin.$assign = "PA13";
 GPIO1.associatedPins[1].pin.$assign = "PA12";
-UART1.peripheral.$suggestSolution          = "UART0";

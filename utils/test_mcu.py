@@ -4,7 +4,7 @@
 使い方:
   python3 utils/test_mcu.py [ポート]
 
-ポート省略時は /dev/ttyUSB0, /dev/ttyUSB1, /dev/ttyACM0 を順に探します。
+ポート省略時は /dev/ttyAMA0 (GPIO UART) を優先し、なければ USB シリアルを探します。
 """
 
 import struct
@@ -13,7 +13,7 @@ import os
 
 
 def find_serial_port():
-    for p in ["/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"]:
+    for p in ["/dev/ttyAMA0", "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyACM0"]:
         if os.path.exists(p):
             return p
     return None
@@ -34,7 +34,7 @@ def main():
         sys.exit(1)
 
     # ステータス + ハートビート
-    result = client.read_holding_registers(0x00, count=2, slave=1)
+    result = client.read_holding_registers(0x00, count=2, device_id=1)
     if result.isError():
         print("  応答なし: MCU がリセット済みか確認してください")
         client.close()
@@ -48,7 +48,7 @@ def main():
     print(f"  HEARTBEAT: {hb}")
 
     # IMU + Mag
-    result = client.read_holding_registers(0x10, count=9, slave=1)
+    result = client.read_holding_registers(0x10, count=9, device_id=1)
     if not result.isError():
         vals = [r if r < 0x8000 else r - 0x10000 for r in result.registers]
         print(f"  ACCEL:     X={vals[0]}, Y={vals[1]}, Z={vals[2]}")
@@ -56,7 +56,7 @@ def main():
         print(f"  MAG:       X={vals[6]}, Y={vals[7]}, Z={vals[8]}")
 
     # Quaternion
-    result = client.read_holding_registers(0x20, count=8, slave=1)
+    result = client.read_holding_registers(0x20, count=8, device_id=1)
     if not result.isError():
         regs = result.registers
         quats = []
@@ -69,7 +69,7 @@ def main():
         )
 
     # エンコーダ・速度
-    result = client.read_holding_registers(0x30, count=6, slave=1)
+    result = client.read_holding_registers(0x30, count=6, device_id=1)
     if not result.isError():
         r = result.registers
         enc_l = (r[0] << 16) | r[1]
