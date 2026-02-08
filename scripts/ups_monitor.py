@@ -3,19 +3,25 @@
 
 バッテリー電圧を定期的に監視し、低下時に安全シャットダウンを実行します。
 
+公式リファレンス: https://github.com/geeekpi/upsplus
+
 I2C デバイス:
   0x17: UPS MCU (バッテリー電圧, 容量)
   0x40: INA219 供給電力モニター
   0x45: INA219 バッテリーモニター
 
-UPS MCU レジスタマップ (バイトアドレス):
-  0x01-0x02: MCU 内部電圧 (2400-3600 mV)
-  0x03-0x04: Pogopin 電圧 (0-5500 mV)
-  0x05-0x06: バッテリー端子電圧 (0-4500 mV)
-  0x07-0x08: USB-C 充電ポート電圧 (0-13500 mV)
-  0x09-0x0A: MicroUSB 充電ポート電圧 (0-13500 mV)
-  0x0B-0x0C: バッテリー温度 (-20〜65 ℃)
-  0x13-0x14: バッテリー残量 (0-100 %)
+UPS MCU レジスタマップ (バイトアドレス, read_byte_data で1バイトずつ読み取り):
+  1-2:   MCU 内部電圧 (mV)
+  3-4:   RPi 出力電圧 (mV)
+  5-6:   バッテリー端子電圧 (mV) ※充電中は不正確
+  7-8:   USB-C 充電ポート電圧 (mV)
+  9-10:  MicroUSB 充電ポート電圧 (mV)
+  11-12: バッテリー温度 (℃)
+  17-18: 保護電圧 (mV, RW)
+  19-20: バッテリー残量 (%)
+  23:    電源状態 (1=正常)
+  24:    シャットダウンカウントダウン (秒, RW)
+  25:    外部電源復帰時自動起動 (0/1, RW)
 """
 
 import time
@@ -31,7 +37,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # --- 設定 ---
-PROTECT_VOLTAGE_MV = 3500   # この電圧以下でシャットダウン (放電時のみ)
+PROTECT_VOLTAGE_MV = 3500   # この電圧以下でシャットダウン (非充電時のみ)
 WARN_VOLTAGE_MV = 3700      # この電圧以下で警告開始
 CHECK_INTERVAL_S = 30       # 監視間隔 (秒)
 LOW_COUNT_THRESHOLD = 3     # 連続N回低電圧でシャットダウン
@@ -39,18 +45,22 @@ LOW_COUNT_THRESHOLD = 3     # 連続N回低電圧でシャットダウン
 MCU_ADDR = 0x17
 I2C_BUS = 1
 
-# UPS MCU レジスタアドレス (バイトアドレス)
-REG_BATT_VOLTAGE = 0x05     # バッテリー端子電圧 (mV)
-REG_USB_C_VOLTAGE = 0x07    # USB-C 充電ポート電圧 (mV)
-REG_MICRO_USB_VOLTAGE = 0x09  # MicroUSB 充電ポート電圧 (mV)
-REG_BATT_CAPACITY = 0x13    # バッテリー残量 (%)
+
+def read_mcu_16(bus, reg_lo):
+    """UPS MCU から 16bit LE 値を読み出す (公式と同じ read_byte_data 方式)"""
+    lo = bus.read_byte_data(MCU_ADDR, reg_lo)
+    hi = bus.read_byte_data(MCU_ADDR, reg_lo + 1)
+    return (hi << 8) | lo
 
 
-def shutdown():
-    """安全シャットダウン"""
+def shutdown(bus):
+    """安全シャットダウン (公式と同じくレジスタ24にカウントダウンを書き込む)"""
     log.warning("バッテリー低下 — シャットダウンを実行します")
-    subprocess.run(["sudo", "shutdown", "-h", "now"], check=False)
-    sys.exit(0)
+    bus.write_byte_data(MCU_ADDR, 24, 240)
+    subprocess.run(["sudo", "sync"], check=False)
+    subprocess.run(["sudo", "halt"], check=False)
+    while True:
+        time.sleep(10)
 
 
 def main():
@@ -71,34 +81,48 @@ def main():
 
     while True:
         try:
-            batt_v_mv = bus.read_word_data(MCU_ADDR, REG_BATT_VOLTAGE)
-            batt_cap = bus.read_word_data(MCU_ADDR, REG_BATT_CAPACITY)
-            usb_c_mv = bus.read_word_data(MCU_ADDR, REG_USB_C_VOLTAGE)
-            micro_usb_mv = bus.read_word_data(MCU_ADDR, REG_MICRO_USB_VOLTAGE)
+            # MCU レジスタ読み取り (公式と同じ read_byte_data 方式)
+            batt_v_mv = read_mcu_16(bus, 5)      # bytes 5-6: バッテリー端子電圧
+            batt_cap = read_mcu_16(bus, 19)       # bytes 19-20: 残量 (%)
+            usb_c_mv = read_mcu_16(bus, 7)        # bytes 7-8: USB-C 電圧
+            micro_usb_mv = read_mcu_16(bus, 9)    # bytes 9-10: MicroUSB 電圧
+
+            # INA219 読み取り
             supply_v = ina_supply.voltage()
+            batt_voltage = ina_batt.voltage()
             batt_i = ina_batt.current()
 
-            charging = "充電中" if batt_i < 0 else "放電中"
+            # 充電判定 (公式準拠: USB-C or MicroUSB > 4000mV で充電中)
+            if usb_c_mv > 4000:
+                charge_src = "充電中(USB-C)"
+            elif micro_usb_mv > 4000:
+                charge_src = "充電中(MicroUSB)"
+            else:
+                charge_src = "非充電"
+
             log.info(
-                "Battery=%dmV Cap=%d%% Supply=%.2fV I=%.0fmA (%s) USB-C=%dmV MicroUSB=%dmV",
-                batt_v_mv, batt_cap, supply_v, batt_i, charging,
-                usb_c_mv, micro_usb_mv,
+                "Battery=%dmV(INA:%.2fV) Cap=%d%% Supply=%.2fV I=%.0fmA %s",
+                batt_v_mv, batt_voltage, batt_cap, supply_v, batt_i, charge_src,
             )
 
-            # 外部電源が接続されている場合はシャットダウンしない
-            has_external_power = usb_c_mv > 1000 or micro_usb_mv > 1000
+            # シャットダウン判定 (公式準拠: 非充電時のみ INA219 電圧で判定)
+            is_charging = usb_c_mv > 4000 or micro_usb_mv > 4000
 
-            if batt_v_mv <= PROTECT_VOLTAGE_MV and not has_external_power:
-                low_count += 1
-                log.warning(
-                    "低電圧検出: %d mV (連続 %d/%d)",
-                    batt_v_mv, low_count, LOW_COUNT_THRESHOLD,
-                )
-                if low_count >= LOW_COUNT_THRESHOLD:
-                    shutdown()
-            elif batt_v_mv <= WARN_VOLTAGE_MV and not has_external_power:
-                low_count = 0
-                log.warning("バッテリー残量注意: %d mV", batt_v_mv)
+            if not is_charging and str(batt_voltage) != "0.0":
+                batt_mv_ina = batt_voltage * 1000
+                if batt_mv_ina < PROTECT_VOLTAGE_MV + 200:
+                    low_count += 1
+                    log.warning(
+                        "低電圧検出: %.0f mV (連続 %d/%d)",
+                        batt_mv_ina, low_count, LOW_COUNT_THRESHOLD,
+                    )
+                    if low_count >= LOW_COUNT_THRESHOLD:
+                        shutdown(bus)
+                elif batt_mv_ina < WARN_VOLTAGE_MV:
+                    low_count = 0
+                    log.warning("バッテリー残量注意: %.0f mV", batt_mv_ina)
+                else:
+                    low_count = 0
             else:
                 low_count = 0
 
